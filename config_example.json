@@ -1,0 +1,4 @@
+{
+    "imdb_db_url": "mysql://imdb:jyEGPAtq6eDtZuCm@localhost/imdb",
+    "cache_file": "imdb_id_to_movie_id.json"
+}

@@ -1,0 +1,86 @@
+from ftplib import FTP
+from datetime import datetime, timedelta
+import sys
+import argparse
+import os
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('db', help = 'database schema uri')
+parser.add_argument('--ftp_host', help = 'ftp server host', default = 'ftp.fu-berlin.de')
+parser.add_argument('--ftp_path', help = 'ftp server path', default = 'pub/misc/movies/database/')
+
+args = parser.parse_args()
+
+target_path = '/tmp/imdb'
+
+if not os.path.exists(target_path):
+    os.mkdir(target_path)
+
+ftp = FTP(args.ftp_host)
+ftp.login()
+ftp.cwd(args.ftp_path)
+
+filenames = [
+    'actors.list.gz',
+    'actresses.list.gz',
+    'aka-names.list.gz',
+    'aka-titles.list.gz',
+    'alternate-versions.list.gz',
+    'biographies.list.gz',
+    'business.list.gz',
+    'certificates.list.gz',
+    'cinematographers.list.gz',
+    'color-info.list.gz',
+    'complete-cast.list.gz',
+    'complete-crew.list.gz',
+    'composers.list.gz',
+    'costume-designers.list.gz',
+    'countries.list.gz',
+    'crazy-credits.list.gz',
+    'directors.list.gz',
+    'distributors.list.gz',
+    'editors.list.gz',
+    'genres.list.gz',
+    'german-aka-titles.list.gz',
+    'goofs.list.gz',
+    'iso-aka-titles.list.gz',
+    'italian-aka-titles.list.gz',
+    'keywords.list.gz',
+    'language.list.gz',
+    'laserdisc.list.gz',
+    'literature.list.gz',
+    'locations.list.gz',
+    'miscellaneous-companies.list.gz',
+    'miscellaneous.list.gz',
+    'movie-links.list.gz',
+    'movies.list.gz',
+    'mpaa-ratings-reasons.list.gz',
+    'plot.list.gz',
+    'producers.list.gz',
+    'production-companies.list.gz',
+    'production-designers.list.gz',
+    'quotes.list.gz',
+    'ratings.list.gz',
+    'release-dates.list.gz',
+    'running-times.list.gz',
+    'sound-mix.list.gz',
+    'soundtracks.list.gz',
+    'special-effects-companies.list.gz',
+    'taglines.list.gz',
+    'technical.list.gz',
+    'trivia.list.gz',
+    'writers.list.gz',
+]
+
+for filename in filenames:
+    with open(os.path.join(target_path, filename), 'w') as f:
+        ftp.retrbinary('RETR %s' % filename, f.write)
+        print '%s downloaded' % filename
+
+build_db_cmd = ['imdbpy2sql.py', '-d', target_path, '-u', args.db, '--mysql-force-myisam']
+proc = subprocess.Popen(build_db_cmd, stdout = subprocess.PIPE)
+for line in iter(proc.stdout.readline, ''):
+   print line.rstrip()
+
+print 'IMDb database has been built'
