@@ -36,6 +36,7 @@ def airdates():
     imdb = IMDb('sql', uri = config['imdb_db_url'])
     show_list = json.loads(request.get_data())
     res = {}
+    default = datetime(2016, 7, 15)
     try:
         for id in show_list:
             res[id] = None
@@ -61,7 +62,7 @@ def airdates():
             next_episode = imdb.get_movie(movie['episodes'][next_start_season][next_start_episode].movieID)
             dates = []
             for release_date in next_episode['release dates']:
-                dates.append(parser.parse(release_date.split(':')[1]))
+                dates.append(parser.parse(release_date.split(':')[1], default = default))
 
             res[id] = dict(
                 air_en = min(dates).strftime('%Y-%m-%d'),
