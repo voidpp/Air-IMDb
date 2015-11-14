@@ -4,7 +4,7 @@ from movie_data import MovieMap
 from datetime import datetime
 from dateutil import parser
 import json
-from voidpp_python_tools.json_config import JSONConfigLoader
+from voidpp_tools.json_config import JSONConfigLoader
 
 config = JSONConfigLoader().load('air-imdb.config.json')
 

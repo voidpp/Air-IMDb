@@ -10,7 +10,7 @@ setup(
         "MySQL-python==1.2.5",
         "python-dateutil==2.4.2",
         "IMDbPY==5.0",
-        "voidpp-python-tools==1.0.0",
+        "voidpp-tools==1.0.0",
     ],
     scripts = [
         'bin/air-imdb-update',
