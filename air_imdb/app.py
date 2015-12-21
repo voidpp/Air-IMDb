@@ -6,7 +6,7 @@ from dateutil import parser
 import json
 from voidpp_tools.json_config import JSONConfigLoader
 
-config = JSONConfigLoader().load('air-imdb.config.json')
+config = JSONConfigLoader(__file__).load('air-imdb.config.json')
 
 if config is None:
     print 'Config not found!!'
