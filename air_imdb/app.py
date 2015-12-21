@@ -42,7 +42,13 @@ def airdates():
             res[id] = None
             rdata = show_list[id]
             if rdata['imdb_id'] not in mmap.data:
-                mmap.data[rdata['imdb_id']] = get_movie_id(imdb, rdata['title'], rdata['imdb_id'])
+                movie_id = get_movie_id(imdb, rdata['title'], rdata['imdb_id'])
+                if movie_id:
+                    mmap.data[rdata['imdb_id']] = movie_id
+
+            if rdata['imdb_id'] not in mmap.data:
+                print rdata
+                continue
 
             movie = imdb.get_movie(mmap.data[rdata['imdb_id']])
 
