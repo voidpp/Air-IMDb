@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name = "air-imdb",
     desciption = "air-imdb",
-    version = "1.0.2",
+    version = "1.0.3",
     install_requires = [
         "Flask==0.10.1",
         "SQLAlchemy==1.0.8",

@@ -10,6 +10,13 @@ parser.add_argument('db', help = 'database schema uri')
 parser.add_argument('--ftp_host', help = 'ftp server host', default = 'ftp.fu-berlin.de')
 parser.add_argument('--ftp_path', help = 'ftp server path', default = 'pub/misc/movies/database/')
 
+"""
+TODO list
+ - +x
+ - read config file for db
+ - erase imdb id mapper cache file
+"""
+
 args = parser.parse_args()
 
 target_path = '/tmp/imdb'

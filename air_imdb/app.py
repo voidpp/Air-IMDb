@@ -5,6 +5,8 @@ from datetime import datetime
 from dateutil import parser
 import json
 from voidpp_tools.json_config import JSONConfigLoader
+import logging
+import logging.config
 
 config = JSONConfigLoader(__file__).load('air-imdb.config.json')
 
@@ -13,17 +15,23 @@ if config is None:
 
 app = Flask('air_imdb')
 
+logging.config.dictConfig(config['logger'])
+
+logger = logging.getLogger('air_imdb')
+
 @app.route('/')
 def index():
     return 'zsomapelklod'
 
 def get_movie_id(imdb, title, id):
-    print 'search for ' + title
+    logger.info("Search for movie '%s', id = %s" % (title, title))
     movies = imdb.search_movie(title)
     for movie in movies:
         imdb_id = imdb.get_imdbMovieID(movie.movieID)
+        logger.debug("Found movie %s (%s)" % ('', imdb_id))
         if imdb_id == id:
             return movie.movieID
+    logger.info("Movie '%s' not found")
     return None
 
 @app.route('/airdates', methods = ['POST'])
@@ -65,16 +73,22 @@ def airdates():
             else:
                 continue
 
-            next_episode = imdb.get_movie(movie['episodes'][next_start_season][next_start_episode].movieID)
-            dates = []
-            for release_date in next_episode['release dates']:
-                dates.append(parser.parse(release_date.split(':')[1], default = default))
+            try:
+                next_episode = imdb.get_movie(movie['episodes'][next_start_season][next_start_episode].movieID)
 
-            res[id] = dict(
-                air_en = min(dates).strftime('%Y-%m-%d'),
-                season = next_start_season,
-                episode = next_start_episode,
-            )
+                dates = []
+
+                for release_date in next_episode['release dates']:
+                    dates.append(parser.parse(release_date.split(':')[1], default = default))
+
+                res[id] = dict(
+                    air_en = min(dates).strftime('%Y-%m-%d'),
+                    season = next_start_season,
+                    episode = next_start_episode,
+                )
+
+            except KeyError as e:
+                logger.exception("Error during movie info fetch")
 
     finally:
         mmap.save()
